@@ -1,0 +1,16 @@
+---
+# vars file for jackl0phty.arch_linux
+
+# Arch Linux group packages.
+arch_linux_group_packages:
+  - 'base'
+  - 'base-devel'
+
+# Arch Linux additional packages.
+arch_linux_additional_packages:
+  - 'iw'
+  - 'wpa_supplicant'
+  - 'dialog'
+  - 'network-manager-applet'
+  - 'networkmanager'
+  - 'bind-tools'
