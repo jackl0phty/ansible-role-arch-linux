@@ -2,22 +2,33 @@
 # tasks file for jackl0phty.arch_linux
 - hosts: all
   tasks:
-    # Include playbook variables.
+  # Include playbook variables.
   - name: Include playbook vars.
     include_vars: '../vars/main.yml'
 
-    # Install Arch Linux Group packages.
+  # Install Arch Linux Group packages.
   - name: Install group packages for Arch Linux.
-    pacman: name={{item}} state=present
+    pacman:
+      name: "{{ item }}"
+      state: present
     with_items: '{{ arch_linux_group_packages }}'
     become: yes
     become_user: root
-    when: ansible_distribution == 'Arch'
+    when: ansible_distribution == "Archlinux"
 
   # Install Arch Linux additional packages.
   - name: Install additional packages for Arch Linux.
-    pacman: name={{item}} state=present
+    pacman: 
+      name: "{{ item }}"
+      state: present
     with_items: '{{ arch_linux_additional_packages }}'
     become: yes
     become_user: root
-    when: ansible_distribution == 'Arch'
+    when: ansible_distribution == 'Archlinux'
+
+  # Install BASH if it's the default shell.
+  - name: Install BASH shell.
+    #import_tasks: bash.yml
+    #when: '{{ default_shell }}' == 'bash'
+    #when: default_shell == 'bash'
+    debug: var=default_shell

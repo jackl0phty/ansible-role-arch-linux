@@ -14,3 +14,26 @@ arch_linux_additional_packages:
   - 'network-manager-applet'
   - 'networkmanager'
   - 'bind-tools'
+  - 'cmake'
+
+# Set default shell for Arch Linux.
+default_shell:
+  - 'bash'
+
+# Arch Linux Shell packages.
+bash_shell:
+  - 'bash'
+  - 'bash-completion'
+  - 'foo'
+
+# Ethminer clone dir.
+ethminer_clone_dir: /opt/ethminer
+
+# Ethminer git repo to clone.
+ethminer_git_repo: https://github.com/ethereum-mining/ethminer.git
+
+# Ethminer brach to clone.
+ethminer_git_branch: master
+
+# Ethminer mining user.
+ethminer_mining_user: yoda

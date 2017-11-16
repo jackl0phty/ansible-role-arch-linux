@@ -1,0 +1,13 @@
+---
+
+# Include playbook variables.
+- name: Include playbook vars.
+  include_vars: '../vars/main.yml'
+
+# Install BASH shell.
+- name: Install BASH shell for Arch Linux.
+  pacman: name={{item}} state=present
+  with_items: '{{ bash_shell }}'
+  become: yes
+  become_user: root
+  when: ansible_distribution == 'Arch'

@@ -1,0 +1,69 @@
+---
+
+- hosts: all
+  tasks:
+
+  # Include playbook variables.
+  - name: Include playbook vars.
+    include_vars: '../vars/main.yml'
+
+  # Clone Ethminer Github repo.
+  - name: Clone ethminer from Github.
+    git: 
+      repo: "{{ ethminer_git_repo }}"
+      dest: "{{ ethminer_clone_dir }}"
+      version: "{{ ethminer_git_branch }}"
+    become: yes
+    become_user: root
+
+  # Set perms to to un-priv user.
+  - name: Set perms on cloned repo to un-priv user.
+    file: 
+      path: "{{ ethminer_clone_dir }}"
+      owner: "{{ ethminer_mining_user }}"
+      group: "{{ ethminer_mining_user }}"
+      recurse: yes
+    become: yes
+    become_user: root
+
+  # Create source build directory.
+  - name: Compile ethminer from source.
+    file:
+      path: "{{  ethminer_clone_dir }}/build"
+      owner: "{{ ethminer_mining_user }}"
+      group: "{{ ethminer_mining_user }}"
+      state: directory
+      mode: 0755
+
+  # Find location of Bash binary.
+  - name: Find location of Bash Binary.
+    shell: which bash
+    register: bash_location    
+    ignore_errors: False 
+
+  # Register if Ethminer binary exists or not.
+  - name: Check if ethminer binary exists.
+    stat: 
+      path: "{{ ethminer_clone_dir }}/build/ethminer/ethminer"
+    register: ethminer_binary_exists
+
+  # Configure project via Cmake.
+  - name: Configure project via Cmake.
+    shell: cmake ..; cmake --build .
+    args: 
+      chdir: "{{ ethminer_clone_dir }}/build"
+    when: ethminer_binary_exists.isfile is defined
+
+  # Register if Ethminer binary has been compiled.
+  - name: Register if Ethminer binary has been compiled.
+    stat:
+      path: /usr/local/bin/ethminer
+    register: ethminer_binary_copied
+
+
+  # copy Ethminer binary to /usr/local/bin.
+  - name: Copy Ethminer binary to /usr/local/bin.
+    shell: cp "{{ ethminer_clone_dir }}/build/ethminer/ethminer" /usr/local/bin/
+    become: yes
+    become_user: root
+    when: ethminer_binary_copied.isfile is defined
