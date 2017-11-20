@@ -1,0 +1,70 @@
+---
+
+- hosts: all
+  tasks:
+
+  # Include playbook variables.
+  - name: Include playbook vars
+    include_vars: '../vars/main.yml'
+
+  # Install QT 5. Required to mine Vericoin.
+  - name: Install QT5.
+    pacman:
+      name: "{{ item }}"
+      state: present
+    with_items: '{{ qt_packages }}'
+    become: yes
+    become_user: root
+    when: ansible_distribution == "Archlinux"
+
+  # Install packages for Vericoin.
+  - name: Install Vericoin packages.
+    pacman:
+      name: "{{ item }}"
+      state: present
+    with_items: '{{ vericoin_packages }}'
+    become: yes
+    become_user: root
+    when: ansible_distribution == "Archlinux"
+
+  # Clone Vericoin crypto wallet Github repo.
+  - name: Clone Vericoin crypto wallet from Github.
+    git:
+      repo: "{{ vericoin_wallet_git_repo }}"
+      dest: "{{ vericoin_wallet_clone_dir }}"
+      version: "{{ vericoin_wallet_git_branch }}"
+    become: yes
+    become_user: root
+
+  # Set perms to to un-priv user.
+  - name: Set perms on Vericoin wallet cloned repo to un-priv user.
+    file:
+      path: "{{ vericoin_wallet_clone_dir }}"
+      owner: "{{ vericoin_user }}"
+      group: "{{ vericoin_user }}"
+      recurse: yes
+    become: yes
+    become_user: root
+
+  # Build Vericoin crypto wallet.
+  - name: Build libleveldb.a & libmemenv.a.
+    shell: make libleveldb.a libmemenv.a
+    args:
+      chdir: "{{ vericoin_wallet_clone_dir }}/src/leveldb"
+    #when: ethminer_binary_exists.isfile is defined
+    become: yes
+    become_user: root
+
+  - name: Build quazip.pro.
+    shell: qmake quazip.pro; make
+    args:
+      chdir: "{{ vericoin_wallet_clone_dir }}/src/quazip"
+    become: yes
+    become: root
+
+  - name: Build vericoin-qt.pro.
+    shell: qmake vericoin-qt.pro; make
+    args:
+      chdir: "{{ vericoin_wallet_clone_dir }}"
+    become: yes
+    become: root

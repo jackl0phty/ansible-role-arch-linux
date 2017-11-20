@@ -1,0 +1,46 @@
+---
+
+- hosts: all
+  tasks:
+
+  # Include playbook variables.
+  - name: Include playbook vars
+    include_vars: '../vars/main.yml'
+
+  # Install packages for Vericoin.
+  - name: Install Vericoin packages.
+    pacman:
+      name: "{{ item }}"
+      state: present
+    with_items: '{{ vericoin_packages }}'
+    become: yes
+    become_user: root
+    when: ansible_distribution == "Archlinux"
+
+  # Clone Vericoin crypto wallet Github repo.
+  - name: Clone Vericoin crypto wallet from Github.
+    git:
+      repo: "{{ vericoin_wallet_git_repo }}"
+      dest: "{{ vericoin_wallet_clone_dir }}"
+      version: "{{ vericoin_wallet_git_branch }}"
+    become: yes
+    become_user: root
+
+  # Set perms to to un-priv user.
+  - name: Set perms on Vericoin wallet cloned repo to un-priv user.
+    file:
+      path: "{{ vericoin_wallet_clone_dir }}"
+      owner: "{{ vericoin_user }}"
+      group: "{{ vericoin_user }}"
+      recurse: yes
+    become: yes
+    become_user: root
+
+  # Build Vericoin crypto wallet.
+  - name: Build Vericoin crypto wallet ( Headless ).
+    shell: make -f makefile.unix
+    args:
+      chdir: "{{ vericoin_wallet_clone_dir }}/src"
+    #when: ethminer_binary_exists.isfile is defined
+    become: yes
+    become_user: root

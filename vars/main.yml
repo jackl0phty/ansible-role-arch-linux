@@ -37,3 +37,32 @@ ethminer_git_branch: master
 
 # Ethminer mining user.
 ethminer_mining_user: yoda
+
+# Install QT 5. Required to mine Vericoin.
+qt_version: 5
+qt_packages: 
+  - "qt{{ qt_version }}-base"
+  - "qt{{ qt_version }}-doc"
+  - "qt{{ qt_version }}-tools"
+
+vericoin_packages:
+  - 'boost'
+  - 'boost-libs'
+  - 'db'
+  - 'pkg-config'
+  - 'openssl'
+  - 'miniupnpc'
+  - 'qrencode'
+  - 'curl'
+  - 'minizip'
+
+# Vericoin crypto wallet clone dir.
+vericoin_wallet_clone_dir: /opt/vericoin_wallet
+
+# Vericoin crypto wallet git repo to clone.
+vericoin_wallet_git_repo: https://github.com/vericoin/vericoin.git
+
+# Vericoin crypto wallet branch to clone.
+vericoin_wallet_git_branch: master
+
+vericoin_user: yoda
