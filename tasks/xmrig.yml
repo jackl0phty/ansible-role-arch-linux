@@ -1,0 +1,70 @@
+---
+
+- hosts: all
+  tasks:
+
+  # Include playbook variables.
+  - name: Include playbook vars
+    include_vars: '../vars/main.yml'
+
+  # Install packages for xmrig.
+  - name: Install xmrig packages.
+    pacman:
+      name: "{{ item }}"
+      state: present
+    with_items: '{{ xmrig_packages }}'
+    become: yes
+    become_user: root
+    when: ansible_distribution == "Archlinux"
+
+  # Clone XMRig Github repo.
+  - name: Clone XMRig Github repo.
+    git:
+      repo: "{{ xmrig_git_repo }}"
+      dest: "{{ xmrig_clone_dir }}"
+      version: "{{ xmrig_git_branch }}"
+      force: yes
+    become: yes
+    become_user: root
+    when: xmrig_clone_dir.isfile is defined  
+
+  # Set perms to to un-priv user.
+  - name: Set perms on XMRig repo to un-priv user.
+    file:
+      path: "{{ xmrig_clone_dir }}"
+      owner: "{{ xmrig_user }}"
+      group: "{{ xmrig_user }}"
+      state: directory
+      mode: 0755
+      recurse: yes
+    become: yes
+    become_user: root
+
+  # Create Build dir for xmrig.
+  - name: Create build dir for xmrig.
+    file:
+      path:  "{{ xmrig_clone_dir }}/build"
+      owner:  "{{ xmrig_user }}" 
+      group: "{{ xmrig_user }}"
+    become: yes
+    become_user: root
+
+  # Set perms to to un-priv user.
+  - name: Set perms on XMRig build dir to un-priv user.
+    file:
+      path: "{{ xmrig_clone_dir }}/build"
+      owner: "{{ xmrig_user }}"
+      group: "{{ xmrig_user }}"
+      state: directory
+      mode: 0755
+    become: yes
+    become_user: root
+
+  # Build xmrig.
+  - name: Build xmrig.
+    shell: cmake ..; make
+    args:
+      chdir: "{{ xmrig_clone_dir }}/build"
+    when: xmrig_binary.isfile is defined
+    become: yes
+    become_user: root

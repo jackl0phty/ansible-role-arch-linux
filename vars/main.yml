@@ -53,8 +53,10 @@ vericoin_packages:
   - 'openssl'
   - 'miniupnpc'
   - 'qrencode'
-  - 'curl'
-  - 'minizip'
+xmrig_packages:
+  - 'cmake'
+  - 'libuv'
+  - 'libmicrohttpd'
 
 # Vericoin crypto wallet clone dir.
 vericoin_wallet_clone_dir: /opt/vericoin_wallet
@@ -66,3 +68,17 @@ vericoin_wallet_git_repo: https://github.com/vericoin/vericoin.git
 vericoin_wallet_git_branch: master
 
 vericoin_user: yoda
+
+# XMRig clone dir.
+xmrig_clone_dir: /opt/xmrig
+
+# XMRig git repo to clone.
+xmrig_git_repo: https://github.com/xmrig/xmrig.git
+
+# XMRig branch to clone.
+xmrig_git_branch: master
+
+xmrig_user: yoda
+
+# Path to compiled xmrig binary.
+xmrig_binary: "{{ xmrig_clone_dir }}/build/xmrig"

@@ -41,6 +41,6 @@
     shell: make -f makefile.unix
     args:
       chdir: "{{ vericoin_wallet_clone_dir }}/src"
-    #when: ethminer_binary_exists.isfile is defined
+    when: xmrig_binary.isfile is defined
     become: yes
     become_user: root
