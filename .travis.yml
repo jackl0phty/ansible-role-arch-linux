@@ -1,34 +1,52 @@
----
-
-  sudo: required
-
-  env:
-    - ARCH_TRAVIS_CLEAN_CHROOT=1
-    - ARCH_TRAVIS_CONFIRM_YES=1
-
-  language: c
-
-compiler:
-  - gcc
-  - clang
+sudo: required
 
 arch:
-  repos:
-    - archlinuxfr=http://repo.archlinux.fr/$arch
+#  repos:
+#    - papyros=http://dash.papyros.io/repos/$repo/$arch
   packages:
-    - procps-ng
-    - reflector
-    # aur
-    - screenfetch-git
-  script:
-    - "sudo screenfetch"
-    - "reflector --verbose -l 20 --sort rate -p https"
-    - "echo $CC"
-    - "touch test_file"
+    # pacman packages
+    - base
+    - base-devel 
+    - iw
+    - wpa_supplicant
+    - dialog
+    - network-manager-applet
+    - networkmanager
+    - bind-tools
+    - cmake
+    - bash
+    - bash-completion
+    - qt5-base
+    - qt5-doc
+    - qt5-tools
+    - boost
+    - boost-libs
+    - db
+    - pkg-config
+    - openssl
+    - miniupnpc
+    - qrencode
+    - libuv
+    - libmicrohttpd
+    - zeromq
+    - unbound
+    - libunwind
+    - xz
+    - readline
+    - ldns
+    - expat
+    - gtest
+    - doxygen
+    - graphviz
+    # aur packages
+    # - go-git
+    # packages from papyros repo
+#    - papyros-shell
+script:
+  - "./build_script.sh"
 
 script:
-  - "bash ./arch-travis.sh"
-- "ls -l"
+  - "curl -s https://raw.githubusercontent.com/jackl0phty/arch-travis/master/arch-travis.sh | bash"
 
 notifications:
 webhooks: https://galaxy.ansible.com/api/v1/notifications/
