@@ -41,10 +41,6 @@ arch:
     - graphviz
     # aur packages
     # - go-git
-    # packages from papyros repo
-#    - papyros-shell
-script:
-  - "./build_script.sh"
 
 script:
   - "curl -s https://raw.githubusercontent.com/jackl0phty/arch-travis/master/arch-travis.sh | bash"
