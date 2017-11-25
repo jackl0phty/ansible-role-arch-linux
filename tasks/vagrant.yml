@@ -1,0 +1,23 @@
+---
+
+- hosts: all
+
+  tasks:
+
+  # Include playbook variables.
+  - name: Include playbook vars.
+    include_vars: '../vars/main.yml'
+
+  # Install virtualbox
+  - name: Install virtual box.
+    pacman: name=virtualbox
+    state: latest
+    become: yes
+    become_user: root
+
+  # Install Vagrant.
+  - name: Install Vagrant for Arch Linux.
+    pacman: name=vagrant
+    state: latest
+    become: yes
+    become_user: root
