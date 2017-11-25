@@ -33,6 +33,7 @@ arch:
     - libunwind
     - xz
     - readline
+    - curl
     - ldns
     - expat
     - gtest
