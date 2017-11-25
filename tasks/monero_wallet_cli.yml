@@ -63,3 +63,21 @@
     when: monerod_bin.isfile is defined
     become: yes
     become_user: root
+
+  # Save location monerod log.
+  - name: Save location of monerod log.
+    stat:
+      path: /var/log/monerod.log
+    register: monerod_log
+  
+  # Create log file for Monerod.
+  - name: Create log file for Monerod.
+    file:
+      state: touch
+      path: /var/log/monerod.log
+      owner: "{{ monero_cli_user }}"
+      group: "{{ monero_cli_user }}"
+      mode: 0644
+    when: monerod_log.isfile is defined
+    become: yes
+    become_user: root
