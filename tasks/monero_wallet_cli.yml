@@ -81,3 +81,21 @@
     when: monerod_log.isfile is defined
     become: yes
     become_user: root
+
+  # Save location monero cli log.
+  - name: Save location of monero cli log.
+    stat:
+      path: /var/log/monero-cli.log
+    register: monero_cli_log
+
+  # Create log file for Monero cli "hot" wallet.
+  - name: Create log file for Monero cli hot wallet.
+    file:
+      state: touch
+      path: /var/log/monero-cli.log
+      owner: "{{ monero_cli_user }}"
+      group: "{{ monero_cli_user }}"
+      mode: 0644
+    when: monero_cli_log.isfile is defined
+    become: yes
+    become_user: root
