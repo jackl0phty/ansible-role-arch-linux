@@ -1,0 +1,65 @@
+---
+
+- hosts: all
+  tasks:
+
+  # Include playbook variables.
+  - name: Include playbook vars
+    include_vars: '../vars/main.yml'
+
+  # Install packages for Monero cli.
+  - name: Install xmrig packages.
+    pacman:
+      name: "{{ item }}"
+      state: present
+    with_items: '{{ monero_cli_packages }}'
+    become: yes
+    become_user: root
+    when: ansible_distribution == "Archlinux"
+
+  # Clone Monero cli Github repo.
+  - name: Clone Monero cli Github repo.
+    git:
+      repo: "{{ monero_cli_git_repo }}"
+      dest: "{{ monero_cli_clone_dir }}"
+      version: "{{ monero_cli_git_branch }}"
+      force: yes
+    when: monero_cli_binary.isfile is defined 
+    become: yes
+    become_user: root
+    #when: monero_cli_clone_dir.isfile is defined  
+
+  # Set perms to to un-priv user.
+  - name: Set perms on Monero cli repo to un-priv user.
+    file:
+      path: "{{ monero_cli_clone_dir }}"
+      owner: "{{ monero_cli_user }}"
+      group: "{{ monero_cli_user }}"
+      state: directory
+      mode: 0755
+      recurse: yes
+    become: yes
+    become_user: root
+
+  # Build Monero cli.
+  - name: Build Monero cli.
+    shell: make
+    args:
+      chdir: "{{ monero_cli_clone_dir }}"
+    when: monero_cli_binary.isfile is defined
+    become: yes
+    become_user: root
+  
+  # Save location of compiled monerod binary.
+  - name: Save location of compiled monerod binary.
+    stat:
+      path: /usr/local/bin/monerod
+    register: monerod_bin
+
+  # Copy Monero cli binary .
+  - name: Copy Monero cli binary.
+    shell: "cp {{ monero_cli_clone_dir }}/build/release/bin/monero* /usr/local/bin/; chown {{ monero_cli_user }}:{{ monero_cli_user }} /usr/local/bin/monero*"
+    args:
+    when: monerod_bin.isfile is defined
+    become: yes
+    become_user: root

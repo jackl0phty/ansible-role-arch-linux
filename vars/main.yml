@@ -58,6 +58,23 @@ xmrig_packages:
   - 'libuv'
   - 'libmicrohttpd'
 
+monero_cli_packages:
+  - 'base-devel'
+  - 'cmake'
+  - 'boost'
+  - 'openssl'
+  - 'zeromq'
+  - 'unbound'
+  - 'miniupnpc'
+  - 'libunwind'
+  - 'xz'
+  - 'readline'
+  - 'ldns'
+  - 'expat'
+  - 'gtest'
+  - 'doxygen'
+  - 'graphviz'
+
 # Vericoin crypto wallet clone dir.
 vericoin_wallet_clone_dir: /opt/vericoin_wallet
 
@@ -82,3 +99,17 @@ xmrig_user: yoda
 
 # Path to compiled xmrig binary.
 xmrig_binary: "{{ xmrig_clone_dir }}/build/xmrig"
+
+# Monero cli crypto wallet clone dir.
+monero_cli_clone_dir: /opt/monero_cli
+
+# Monero cli crypto wallet git repo to clone.
+monero_cli_git_repo: https://github.com/monero-project/monero.git
+
+# Monero cli binary.
+monero_cli_binary: /opt/monero_cli/build/release/bin/monerod
+
+# Monero cli crypto wallet branch to clone.
+monero_cli_git_branch: master
+
+monero_cli_user: yoda
