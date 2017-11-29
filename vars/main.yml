@@ -75,6 +75,9 @@ monero_cli_packages:
   - 'doxygen'
   - 'graphviz'
 
+coinmon_packages:
+  - 'npm'
+
 # Vericoin crypto wallet clone dir.
 vericoin_wallet_clone_dir: /opt/vericoin_wallet
 

@@ -1,0 +1,28 @@
+---
+
+- hosts: all
+  tasks:
+
+  # Include playbook variables.
+  - name: Include playbook vars
+    include_vars: '../vars/main.yml'
+
+  # Install coinmon packages.
+  - name: Install coinmon packages.
+    pacman:
+      name: "{{ item }}"
+      state: present
+    with_items: '{{ coinmon_packages }}'
+    become: yes
+    become_user: root
+    when: ansible_distribution == "Archlinux"
+
+  # Install NPM.
+  - name: Install NPM package coinmon.
+    npm:
+      name: coinmon
+      state: present
+      global: yes
+    become: yes
+    become_user: root
+    when: ansible_distribution == "Archlinux"
