@@ -1,0 +1,12 @@
+---
+
+- hosts: all
+  tasks:
+
+  # Include playbook variables.
+  - name: Include playbook vars
+    include_vars: '../vars/main.yml'
+
+  # Install pip and pipenv.
+  - name: Install pip and pipenv.
+    include_tasks: 'pipenv.yml'

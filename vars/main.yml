@@ -78,6 +78,13 @@ monero_cli_packages:
 coinmon_packages:
   - 'npm'
 
+pipenv_packages:
+  - 'python-pip'
+
+exodus_packages:
+  - 'libxss'
+  - 'gconf'
+
 # Vericoin crypto wallet clone dir.
 vericoin_wallet_clone_dir: /opt/vericoin_wallet
 
@@ -116,3 +123,24 @@ monero_cli_binary: /opt/monero_cli/build/release/bin/monerod
 monero_cli_git_branch: master
 
 monero_cli_user: yoda
+
+# Exodus version.
+exodus_version: 1.39.4
+
+# Exodus crypto wallet download url.
+exodus_download_url: "https://exodusbin.azureedge.net/releases/exodus-linux-x64-{{ exodus_version }}.zip"
+
+# Exodus download file.
+exodus_download_file: /opt/exodus.zip
+
+# Exodus download dir.
+exodus_download_dir: /opt
+
+# Exodus unzipped dir.
+exodus_unzip_dir: /opt/Exodus-linux-x64
+
+# Exodus user.
+exodus_user: yoda
+
+# Exodus download checksum
+exodus_download_checksum: 42e744e0ea417136475e0f708e6475ac67375a0e6b8aa285da8da034291b876f

@@ -1,0 +1,73 @@
+---
+
+- hosts: all
+  tasks:
+
+  # Include playbook variables.
+  - name: Include playbook vars
+    include_vars: '../vars/main.yml'
+
+  # Install packages for Exodus.
+  - name: Install Exodus packages.
+    pacman:
+      name: "{{ item }}"
+      state: present
+    with_items: '{{ exodus_packages }}'
+    become: yes
+    become_user: root
+    when: ansible_distribution == "Archlinux"
+
+  # Download Exodus source code.
+  - name: Download Exodus source code.
+    get_url:
+      url: "{{ exodus_download_url }}"
+      dest: "{{ exodus_download_file }}"
+      mode: 0644
+      checksum: "sha256:{{ exodus_download_checksum }}"
+    become: yes
+    become_user: root
+    #when: exodus_download_file.isfile is defined  
+
+  # Set perms to un-priv user.
+  - name: Set perms on exodus download to un-priv user.
+    file:
+      path: "{{ exodus_download_file }}"
+      owner: "{{ exodus_user }}"
+      group: "{{ exodus_user }}"
+      state: file 
+      mode: 0755
+      recurse: no 
+    become: yes
+    become_user: root
+
+  # Unzip Exodus download zip file.
+  - name: Unzip Exodus download zip file.
+    unarchive:
+
+      src:  "{{ exodus_download_file }}"
+      dest: "{{ exodus_download_dir }}" 
+      owner:  "{{ exodus_user }}"
+      group: "{{ exodus_user }}"
+    become: yes
+    become_user: root
+    when: exodus_unzip_dir.isfile is defined
+
+  # Set perms to to un-priv user.
+ # - name: Set perms on Exodus build dir to un-priv user.
+ #   file:
+ #     path: "{{ exodus_clone_dir }}/build"
+ #     owner: "{{ exodus_user }}"
+ #     group: "{{ exodus_user }}"
+ #     state: directory
+ #     mode: 0755
+ #   become: yes
+ #   become_user: root
+
+  # Build Exodus.
+#  - name: Build exodus.
+#    shell: cmake ..; make
+#    args:
+#      chdir: "{{ exodus_clone_dir }}/build"
+#    when: exodus_binary.isfile is defined
+#    become: yes
+#    become_user: root

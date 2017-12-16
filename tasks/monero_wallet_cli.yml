@@ -8,7 +8,7 @@
     include_vars: '../vars/main.yml'
 
   # Install packages for Monero cli.
-  - name: Install xmrig packages.
+  - name: Install Monero cli.
     pacman:
       name: "{{ item }}"
       state: present
