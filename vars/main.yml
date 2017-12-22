@@ -61,6 +61,13 @@ xmrig_packages:
   - 'libuv'
   - 'libmicrohttpd'
 
+xmrstak_packages:
+  - 'base-devel'
+  - 'hwloc'
+  - 'openssl'
+  - 'cmake'
+  - 'libmicrohttpd'
+
 monero_cli_packages:
   - 'base-devel'
   - 'cmake'
@@ -112,6 +119,21 @@ xmrig_user: yoda
 
 # Path to compiled xmrig binary.
 xmrig_binary: "{{ xmrig_clone_dir }}/build/xmrig"
+
+
+# xmrstak clone dir.
+xmrstak_clone_dir: /opt/xmrstak
+
+# xmrstak git repo to clone.
+xmrstak_git_repo: https://github.com/fireice-uk/xmr-stak.git
+
+# xmrstak branch to clone.
+xmrstak_git_branch: master
+
+xmrstak_user: yoda
+
+# Path to compiled xmrstak binary.
+xmrstak_binary: "{{ xmrstak_clone_dir }}/build/xmrstak"
 
 # Monero cli crypto wallet clone dir.
 monero_cli_clone_dir: /opt/monero_cli

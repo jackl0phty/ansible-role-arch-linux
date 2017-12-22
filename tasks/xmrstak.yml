@@ -1,0 +1,92 @@
+---
+
+- hosts: all
+  tasks:
+
+  # Include playbook variables.
+  - name: Include playbook vars
+    include_vars: '../vars/main.yml'
+
+  # Install packages for xmrstak.
+  - name: Install xmrstak packages.
+    pacman:
+      name: "{{ item }}"
+      state: present
+    with_items: '{{ xmrstak_packages }}'
+    become: yes
+    become_user: root
+    when: ansible_distribution == "Archlinux"
+
+  # Has xmr-stak been compiled yet.
+  - name: Has xmr-stak been compile
+    stat: path=/usr/local/bin/xmr-stak
+    register: xmrstak_binary
+
+  # Clone xmrstak Github repo.
+  - name: Clone xmrstak Github repo.
+    git:
+      repo: "{{ xmrstak_git_repo }}"
+      dest: "{{ xmrstak_clone_dir }}"
+      version: "{{ xmrstak_git_branch }}"
+      force: yes
+    become: yes
+    become_user: root
+    when: xmrstak_binary.stat.exists == False
+
+  # Set perms to to un-priv user.
+  - name: Set perms on xmrstak repo to un-priv user.
+    file:
+      path: "{{ xmrstak_clone_dir }}"
+      owner: "{{ xmrstak_user }}"
+      group: "{{ xmrstak_user }}"
+      state: directory
+      mode: 0755
+      recurse: yes
+    when: xmrstak_binary.stat.exists == False
+    become: yes
+    become_user: root
+
+  # Create Build dir for xmrstak.
+  - name: Create build dir for xmrstak.
+    file:
+      path:  "{{ xmrstak_clone_dir }}/build"
+      owner:  "{{ xmrstak_user }}" 
+      group: "{{ xmrstak_user }}"
+      state: directory
+      mode: 0755
+    become: yes
+    become_user: root
+
+  # Set perms to to un-priv user.
+  - name: Set perms on xmrstak build dir to un-priv user.
+    file:
+      path: "{{ xmrstak_clone_dir }}/build"
+      owner: "{{ xmrstak_user }}"
+      group: "{{ xmrstak_user }}"
+      state: directory
+      mode: 0755
+    become: yes
+    become_user: root
+
+  # Build xmrstak.
+  - name: Build xmrstak.
+    shell: cmake -DCUDA_ENABLE=OFF -DOpenCL_ENABLE=OFF ..; make
+    args:
+      chdir: "{{ xmrstak_clone_dir }}/build"
+    when: xmrstak_binary.stat.exists == False
+    become: yes
+    become_user: root
+
+  # Register if xmrstak binary has been compiled.
+  - name: Register if xmrstak binary has been compiled.
+    stat:
+      path: /usr/local/bin/xmrstak
+    register: xmrstak_binary_copied
+
+
+  # Copy xmrstak binary to /usr/local/bin.
+  - name: Copy xmrstak binary to /usr/local/bin.
+    shell: cp "{{ xmrstak_clone_dir }}/build/bin/xmr-stak" /usr/local/bin/
+    become: yes
+    become_user: root
+    when: xmrstak_binary.stat.exists == False
