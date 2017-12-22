@@ -15,6 +15,9 @@ arch_linux_additional_packages:
   - 'networkmanager'
   - 'bind-tools'
   - 'cmake'
+  - 'whois'
+  - 'coreutils'
+  - 'mlocate'
 
 # Set default shell for Arch Linux.
 default_shell:
@@ -123,6 +126,18 @@ monero_cli_binary: /opt/monero_cli/build/release/bin/monerod
 monero_cli_git_branch: master
 
 monero_cli_user: yoda
+
+# Monero url to seed file to download.
+monero_seed_file_download_url: https://downloads.getmonero.org/blockchain.raw
+
+# Monero seed file name.
+monero_seed_file_download_file: blockchain.raw
+
+# Monerod config file.
+monerod_config_file: /opt/monero_cli/monerod.conf
+
+# Monerod data dir.
+monero_data_dir: /opt/monero_cli/data
 
 # Exodus version.
 exodus_version: 1.39.4

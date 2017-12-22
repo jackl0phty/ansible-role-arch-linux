@@ -99,3 +99,35 @@
     when: monero_cli_log.isfile is defined
     become: yes
     become_user: root
+
+  # Download seed file.
+  - name: Download Monero seed file.
+    get_url:
+      url: "{{ monero_seed_file_download_url }}"
+      dest: "/opt/monero_cli/{{ monero_seed_file_download_file }}"
+      mode: 0644
+    become: yes
+    become_user: root
+    when: monero_seed_file_download_file.isfile is defined
+
+  # Monerod config file.
+  - name: Write out config file for monerod.
+    template:
+      src: '../templates/monerod.conf'
+      dest: "{{ monerod_config_file }}"
+      owner: "{{ monero_cli_user }}"
+      group: "{{ monero_cli_user }}"
+      mode: 0644
+    when: monerod_config_file.isfile is defined    
+
+
+  # Create data dir.
+  - name: Create data directory for monerod.
+    file:
+      path: "{{ monero_data_dir }}" 
+      state: directory
+      mode: 0640
+      owner: "{{ monero_cli_user }}"
+      group: "{{ monero_cli_user }}"
+    when: monero_data_dir.isfile is defined
+
