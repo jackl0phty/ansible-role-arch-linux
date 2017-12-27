@@ -39,8 +39,7 @@ arch:
     - gtest
     - doxygen
     - graphviz
-    # aur packages
-    # - go-git
+    - git
 
 script:
   - "curl -s https://raw.githubusercontent.com/jackl0phty/arch-travis/master/arch-travis.sh | bash"
