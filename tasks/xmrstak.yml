@@ -90,3 +90,14 @@
     become: yes
     become_user: root
     when: xmrstak_binary.stat.exists == False
+
+  # Build xmrstak config.
+  - name: Build xmr-stak.
+    template:
+      src: '../templates/xmrstak.j2'
+      dest: "{{ xmrstak_clone_dir }}/xmr-stak.conf" 
+      owner: "{{ xmrstak_user }}"
+      group: "{{ xmrstak_user }}" 
+      mode: 0644  
+    become: yes
+    become_user: root 
