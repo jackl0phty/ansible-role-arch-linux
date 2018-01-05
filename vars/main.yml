@@ -95,6 +95,9 @@ exodus_packages:
   - 'libxss'
   - 'gconf'
 
+monerogui_packages:
+  - ''
+
 # Vericoin crypto wallet clone dir.
 vericoin_wallet_clone_dir: /opt/vericoin_wallet
 
@@ -181,3 +184,24 @@ exodus_user: yoda
 
 # Exodus download checksum
 exodus_download_checksum: 42e744e0ea417136475e0f708e6475ac67375a0e6b8aa285da8da034291b876f
+
+# Monero GUI version.
+monerogui_version: 0.10.3.1 
+
+# Monero GUI crypto wallet download url.
+monerogui_download_url: "https://downloads.getmonero.org/gui/monero-gui-linux-x64-v{{ monerogui_version }}.tar.bz2"
+
+# Monero GUI download file.
+monerogui_download_file: /opt/monerogui.zip
+
+# Monero GUI download dir.
+monerogui_download_dir: /opt
+
+# Monero GUI unzipped dir.
+monerogui_unzip_dir: /opt/monerogui
+
+# Monero GUI user.
+monerogui_user: yoda
+
+# Monero GUI download checksum
+monerogui_download_checksum: 4915473265d58720fd8f019e536c2b7fb02648ab51a8087e84aa1e2434788452

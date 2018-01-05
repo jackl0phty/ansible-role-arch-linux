@@ -1,0 +1,66 @@
+---
+
+- hosts: all
+  tasks:
+
+  # Include playbook variables.
+  - name: Include playbook vars
+    include_vars: '../vars/main.yml'
+
+  # Install packages for Monero GUI.
+  - name: Install Monero GUI packages.
+    pacman:
+      name: "{{ item }}"
+      state: present
+    with_items: '{{ monerogui_packages }}'
+    become: yes
+    become_user: root
+    when: ansible_distribution == "Archlinux"
+
+  # Download Monero GUI source code.
+  - name: Download Monero GUI source code.
+    get_url:
+      url: "{{ monerogui_download_url }}"
+      dest: "{{ monerogui_download_file }}"
+      mode: 0644
+      checksum: "sha256:{{ monerogui_download_checksum }}"
+    become: yes
+    become_user: root
+    #when: exodus_download_file.isfile is defined  
+
+  # Set perms to un-priv user.
+  - name: Set perms on Monero GUI download to un-priv user.
+    file:
+      path: "{{ monerogui_download_file }}"
+      owner: "{{ monerogui_user }}"
+      group: "{{ monerogui_user }}"
+      state: file 
+      mode: 0755
+      recurse: no 
+    become: yes
+    become_user: root
+
+  # Unzip Monero GUI download zip file.
+  - name: Unzip Monero GUI download zip file.
+    unarchive:
+
+      src:  "{{ monerogui_download_file }}"
+      dest: "{{ monerogui_download_dir }}" 
+      owner:  "{{ monerogui_user }}"
+      group: "{{ monerogui_user }}"
+    become: yes
+    become_user: root
+
+  # Register if monerogui binary has been compiled.
+  - name: Register if monero-wallet-gui  binary has been compiled.
+    stat:
+      path: /usr/local/bin/monero-wallet-gui
+    register: monerogui_binary_copied
+
+
+  # Copy monerogui binary to /usr/local/bin.
+  - name: Copy monerogui binary to /usr/local/bin.
+    shell: cp "{{ monerogui_download_dir }}/monero-wallet-gui" /usr/local/bin/
+    become: yes
+    become_user: root
+  #  when: monerogui_binary.stat.exists == False
