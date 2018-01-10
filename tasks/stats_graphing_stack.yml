@@ -1,0 +1,54 @@
+---
+# tasks file for jackl0phty.arch_linux
+- hosts: all
+  tasks:
+  # Include playbook variables.
+  - name: Include playbook vars.
+    include_vars: '../vars/main.yml'
+
+  # Install Arch Linux stats graphing stack packages.
+  - name: Install graphing stack packages for Arch Linux.
+    pacman:
+      name: "{{ item }}"
+      state: present
+    with_items: '{{ stats_graphing_stack_packages }}'
+    become: yes
+    become_user: root
+    when: ansible_distribution == "Archlinux"
+
+  # Clone StatsD Github repo.
+  - name: Clone StatsD Github repo.
+    git:
+      repo: "{{ statsd_git_repo }}"
+      dest: "{{ statsd_clone_dir }}"
+      version: "{{ statsd_git_branch }}"
+      force: yes
+    become: yes
+    become_user: root
+
+  # Set perms to to un-priv user.
+  - name: Set perms on StatsD repo to un-priv user.
+    file:
+      path: "{{ statsd_clone_dir }}"
+      owner: "{{ statsd_user }}"
+      group: "{{ statsd_user }}"
+      state: directory
+      mode: 0755
+      recurse: yes
+    become: yes
+    become_user: root
+
+  # Record if CollectD is running.
+  - command: "ps aux |grep 'collectd -f' |egrep -v grep |awk '{print $11 }'"
+    register: collectd
+    ignore_errors: True 
+
+ 
+  # Enable and start CollectD service.
+  - name: Enable and start CollectD service.
+    command: systemctl enable collectd.service
+    command: systemctl start collectd.service
+    when: collectd.stdout != collectd
+    become: yes
+    become_user: root
+ 

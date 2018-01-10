@@ -1,0 +1,56 @@
+---
+# tasks file for jackl0phty.arch_linux
+- hosts: all
+  vars:
+  tasks:
+  # Include playbook variables.
+  - name: Include playbook vars.
+    include_vars: '../vars/main.yml'
+
+  # Add maintainer gpg key to install ncurses5-compat-libs.
+  - name: Confirm is gpg key has been imported.
+    command: gpg2 --list-keys |grep 702353E0F7E48EDB
+    register: gpg_key_id
+    ignore_errors: True
+    become: yes
+    become_user: root
+
+
+  # Import gpg key of package maintainer.
+  - name: Import gpg key of maintainer.
+    command: gpg --keyserver keys.gnupg.net --recv-keys 702353E0F7E48EDB
+    when: gpg_key_id.stdout != "C52048C0C0748FEE227D47A2702353E0F7E48EDB"
+    become: yes
+    become_user: root
+
+  # Write out yaourt config file.
+  - name: write out yaourt config file.
+    template:
+      src: '../templates/yaourt.j2'
+      dest: "{{ nvidia_user_home_dir }}/.yaourtrc"
+      owner: "{{ nvidia_user }}"
+      group: "{{ nvidia_user }}"
+      mode: 0644
+    become: yes
+    become_user: root
+
+  # Install ncurses5-compat-libs via yaourt.
+  - name: Install ncurses5-compat-libs via yaourt.
+    shell:  'export VISUAL=vim && yaourt -S ncurses5-compat-libs'
+    when: gpg_key_id.stdout != "C52048C0C0748FEE227D47A2702353E0F7E48EDB"
+    become: yes
+    become_user: '{{ nvidia_user }}'
+
+
+  # Install NVIDIA CUDA GPU Driver & tools.
+  - name: Install NVIDIA CUDA GPU Driver & tools for Arch Linux.
+    pacman:
+      name: "{{ item }}"
+      state: present
+    with_items: '{{ nvidia_cuda_gpu_packages }}'
+    become: yes
+    become_user: root
+    when: ansible_distribution == "Archlinux"
+
+  
+  

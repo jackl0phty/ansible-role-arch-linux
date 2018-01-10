@@ -18,6 +18,7 @@ arch_linux_additional_packages:
   - 'whois'
   - 'coreutils'
   - 'mlocate'
+  - 'linux-headers'
 
 # Set default shell for Arch Linux.
 default_shell:
@@ -27,7 +28,6 @@ default_shell:
 bash_shell:
   - 'bash'
   - 'bash-completion'
-  - 'foo'
 
 # Ethminer clone dir.
 ethminer_clone_dir: /opt/ethminer
@@ -95,7 +95,16 @@ exodus_packages:
   - 'libxss'
   - 'gconf'
 
+stats_graphing_stack_packages:
+  - 'nodejs'
+  - 'graphite'
+  - 'collectd'
+  - 'rrdtool'
+
 monerogui_packages:
+  - ''
+
+nvidia_cuda_gpu_packages:
   - ''
 
 # Vericoin crypto wallet clone dir.
@@ -205,3 +214,21 @@ monerogui_user: yoda
 
 # Monero GUI download checksum
 monerogui_download_checksum: 4915473265d58720fd8f019e536c2b7fb02648ab51a8087e84aa1e2434788452
+
+# StatsD Git Repo.
+statsd_git_repo: https://github.com/etsy/statsd.git
+
+# StatsD clone directory.
+statsd_clone_dir: /opt/statsd
+
+# StatsD branch to clone.
+statsd_git_branch: master
+
+# StastD user.
+statsd_user: yoda
+
+gpg_key_id:
+
+nvidia_user: yoda
+
+nvidia_user_home_dir: /home/yoda

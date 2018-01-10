@@ -28,6 +28,17 @@ Example Playbook
       roles:
          - { role: jackl0phty.arch_linux }
 
+Up and Running
+--------------
+cd /opt/monero_cli
+monerod --config-file monerod.conf
+
+cd ~
+monero-wallet-cli --log-file /var/log/monero-cli.log --log-level 4
+
+cd /opt/xmrstak
+xmr-stak
+
 License
 -------
 
