@@ -105,7 +105,7 @@ monerogui_packages:
   - ''
 
 nvidia_cuda_gpu_packages:
-  - ''
+  - 'cuda'
 
 # Vericoin crypto wallet clone dir.
 vericoin_wallet_clone_dir: /opt/vericoin_wallet
@@ -208,6 +208,21 @@ monerogui_download_dir: /opt
 
 # Monero GUI unzipped dir.
 monerogui_unzip_dir: /opt/monerogui
+
+# NVIDIA GPU driver download url.
+nvidia_gpu_driver_download_url: "http://us.download.nvidia.com/XFree86/Linux-x86_64/367.44/NVIDIA-Linux-x86_64-367.44.run"
+
+# NVIDIA GPU download file.
+nvidia_gpu_driver_file: /opt/nvidia-linux-gpu.run
+
+# NVIDIA GPU download checksum
+nvidia_gpu_driver_download_checksum: 09a4e67afa79c159f96071215bac3e027b553117b91ee35a4ff134a98d8fe7cc
+
+# NVIDIA GPU driver download user.
+nvidia_gpu_driver_download_user: yoda
+
+# NVIDIA GPU driver download path.
+nvidia_gpu_dirver_download_dir: /opt
 
 # Monero GUI user.
 monerogui_user: yoda

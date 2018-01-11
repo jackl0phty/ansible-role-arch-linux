@@ -1,0 +1,51 @@
+---
+
+- hosts: all
+  tasks:
+
+  # Include playbook variables.
+  - name: Include playbook vars
+    include_vars: '../vars/main.yml'
+
+  # Download NVIDIA GPU driver.
+  - name: Download NVIDIA GPU driver.
+    get_url:
+      url: "{{ nvidia_gpu_driver_download_url }}"
+      dest: "{{ nvidia_gpu_driver_file }}"
+      mode: 0644
+      checksum: "sha256:{{ nvidia_gpu_driver_download_checksum }}"
+    become: yes
+    become_user: root
+    #when: exodus_download_file.isfile is defined  
+
+  # Set perms to un-priv user.
+  - name: Set perms on NVIDIA GPU driver download to un-priv user.
+    file:
+      path: "{{ nvidia_gpu_driver_file }}"
+      owner: "{{ nvidia_gpu_driver_download_user }}"
+      group: "{{ nvidia_gpu_driver_download_user }}"
+      state: file 
+      mode: 0755
+      recurse: no 
+    become: yes
+    become_user: root
+
+
+
+
+
+
+
+  # Register if monerogui binary has been compiled.
+#  - name: Register if monero-wallet-gui  binary has been compiled.
+#    stat:
+#      path: /usr/local/bin/monero-wallet-gui
+#    register: monerogui_binary_copied
+
+
+  # Copy monerogui binary to /usr/local/bin.
+#  - name: Copy monerogui binary to /usr/local/bin.
+#    shell: cp "{{ monerogui_download_dir }}/monero-wallet-gui" /usr/local/bin/
+#    become: yes
+#    become_user: root
+  #  when: monerogui_binary.stat.exists == False

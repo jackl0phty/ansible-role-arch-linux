@@ -7,19 +7,31 @@
   - name: Include playbook vars.
     include_vars: '../vars/main.yml'
 
-  # Add maintainer gpg key to install ncurses5-compat-libs.
-  - name: Confirm is gpg key has been imported.
-    command: gpg2 --list-keys |grep 702353E0F7E48EDB
+  # Install NVIDIA GPU driver.
+  - name: Install NVIDIA GPU driver.
+    pacman:
+      name: nvidia
+      state: present
+
+  # Add maintainer GPG key to install ncurses5-compat-libs.
+  - name: Confirm GPG key has been imported.
+    command: gpg2 --list-keys |grep 702353E0F7E48EDB |awk '{ print $1 }'
     register: gpg_key_id
     ignore_errors: True
     become: yes
     become_user: root
 
+  # Print out value of gpg_key_id.
+  # Uncomment to DEBUG.
+  #- name: Print out value of gpg_key_id.
+  #  debug:
+  #    var: gpg_key_id
+  #    verbosity: 2 
 
   # Import gpg key of package maintainer.
   - name: Import gpg key of maintainer.
     command: gpg --keyserver keys.gnupg.net --recv-keys 702353E0F7E48EDB
-    when: gpg_key_id.stdout != "C52048C0C0748FEE227D47A2702353E0F7E48EDB"
+    when: gpg_key_id|failed
     become: yes
     become_user: root
 
@@ -36,8 +48,8 @@
 
   # Install ncurses5-compat-libs via yaourt.
   - name: Install ncurses5-compat-libs via yaourt.
-    shell:  'export VISUAL=vim && yaourt -S ncurses5-compat-libs'
-    when: gpg_key_id.stdout != "C52048C0C0748FEE227D47A2702353E0F7E48EDB"
+    shell:  'gpg --keyserver keys.gnupg.net --recv-keys 702353E0F7E48EDB && export VISUAL=vim && yaourt --noconfirm -S ncurses5-compat-libs'
+    when: gpg_key_id|failed
     become: yes
     become_user: '{{ nvidia_user }}'
 
