@@ -39,6 +39,7 @@ monero-wallet-cli --log-file /var/log/monero-cli.log --log-level 4
 cd /opt/xmrstak
 xmr-stak
 
+
 License
 -------
 

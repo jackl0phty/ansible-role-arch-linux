@@ -70,7 +70,7 @@
 
   # Build xmrstak.
   - name: Build xmrstak.
-    shell: cmake -DCUDA_ENABLE=OFF -DOpenCL_ENABLE=OFF ..; make
+    shell: cmake .. -DCUDA_ENABLE=ON -DOpenCL_ENABLE=OFF -DCUDA_HOST_COMPILER=/usr/bin/gcc-6; make
     args:
       chdir: "{{ xmrstak_clone_dir }}/build"
     when: xmrstak_binary.stat.exists == False
@@ -91,8 +91,21 @@
     become_user: root
     when: xmrstak_binary.stat.exists == False
 
-  # Build xmrstak config.
-  - name: Build xmr-stak.
+  # Register if CUDA backend .so has been copied to clone dir.
+  - name: Register if CUDA backend .so has been copied to clone dir.
+    stat:
+      path: /opt/xmrstak/libxmrstak_cuda_backend.so
+    register: cuda_backend_so
+
+  # Copy CUDA backend .so in place.
+  - name: Copy CUDA backend .so in place.
+    shell: cp "{{ xmrstak_clone_dir }}/build/bin/libxmrstak_cuda_backend.so" "{{ xmrstak_clone_dir }}/"
+    become: yes
+    become_user: root
+    when: cuda_backend_so.stat.exists == False
+
+  # Write xmrstak config.
+  - name: Write xmr-stak config.
     template:
       src: '../templates/xmrstak.j2'
       dest: "{{ xmrstak_clone_dir }}/xmr-stak.conf" 
@@ -101,3 +114,26 @@
       mode: 0644  
     become: yes
     become_user: root 
+
+  # Write xmr-stak CPU config.
+  - name: Write xmr-stak CPU config.
+    template:
+      src: '../templates/cpu.j2'
+      dest: "{{ xmrstak_clone_dir }}/cpu.txt"
+      owner: "{{ xmrstak_user }}"
+      group: "{{ xmrstak_user }}"
+      mode: 0644
+    become: yes
+    become_user: root
+
+  # Write xmr-stak GPU ( NVIDIA )config.
+  - name: Write xmr-stak GPU ( NVIDIA ) config.
+    template:
+      src: '../templates/nvidia.j2'
+      dest: "{{ xmrstak_clone_dir }}/nvidia.txt"
+      owner: "{{ xmrstak_user }}"
+      group: "{{ xmrstak_user }}"
+      mode: 0644
+    become: yes
+    become_user: root
+

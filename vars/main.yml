@@ -19,6 +19,7 @@ arch_linux_additional_packages:
   - 'coreutils'
   - 'mlocate'
   - 'linux-headers'
+  - 'deepin-screenshot'
 
 # Set default shell for Arch Linux.
 default_shell:
@@ -67,6 +68,9 @@ xmrstak_packages:
   - 'openssl'
   - 'cmake'
   - 'libmicrohttpd'
+  - 'opencl-nvidia'
+  - 'opencl-headers'
+  - 'gcc6'
 
 monero_cli_packages:
   - 'base-devel'
@@ -84,6 +88,8 @@ monero_cli_packages:
   - 'gtest'
   - 'doxygen'
   - 'graphviz'
+  - 'boost'
+  - 'boost-libs'
 
 coinmon_packages:
   - 'npm'
@@ -146,6 +152,9 @@ xmrstak_user: yoda
 
 # Path to compiled xmrstak binary.
 xmrstak_binary: "{{ xmrstak_clone_dir }}/build/xmrstak"
+
+# CUDA backend .so.
+cuda_backend_so: "{{ xmrstak_clone_dir }}/libxmrstak_cuda_backend.so"
 
 # Monero cli crypto wallet clone dir.
 monero_cli_clone_dir: /opt/monero_cli
