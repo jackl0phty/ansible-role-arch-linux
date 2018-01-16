@@ -1,0 +1,47 @@
+---
+
+- hosts: all
+  tasks:
+
+
+  # jamin-cvs - CVS password.
+  # cecilia, tracktion, zynewave - no package.
+  # qjackctl - Fails to download potrace. No file available.
+  # Rakarrack, Gladish - ?
+  # denemo - Orphaned pkg.
+  
+  
+  # Include playbook variables.
+  - name: Include playbook vars
+    include_vars: '../vars/main.yml'
+
+  # Install packages for digital audio workstation.
+  - name: Install packages related to digital audio workstation.
+    pacman:
+      name: "{{ item }}"
+      state: present
+    with_items: '{{ digital_audio_packages }}'
+    become: yes
+    become_user: root
+    when: ansible_distribution == "Archlinux"
+
+  # Find location of phasex binary.
+  - name: Find location of phasex Binary.
+    shell: which phasex 
+    register: phasex_location
+    ignore_errors: False
+
+  # Register if Phasex binary exists or not.
+  - name: Check if phasex binary exists.
+    stat:
+      path: "{{ phasex_location }}"
+    register: phasex_binary_exists
+
+  # Install packages via yaourt.
+  - name: Install packages via yaourt.
+    shell:  'export VISUAL=vim && yaourt --noconfirm -S chordii amsynth phasex csound'
+    when: phasex_binary_exists.isfile is defined
+    become: yes
+    become_user: '{{ nvidia_user }}'
+
+# pd-l2ork bitscope creox-git gtick jackbeat jack-rack vkeybd sooperlooper tapiir freqtweak bristol pybristol seq24-bzr

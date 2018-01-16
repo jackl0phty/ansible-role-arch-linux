@@ -30,6 +30,39 @@ bash_shell:
   - 'bash'
   - 'bash-completion'
 
+# Arch linux digital audio packages.
+digital_audio_packages:
+  - 'ardour'
+  - 'audacity'
+  - 'lmms'
+  - 'qtractor'
+  - 'rosegarden'
+  - 'fluidsynth'
+  - 'musescore'
+  - 'hydrogen'
+#  - 'blender'
+  - 'jack'
+  - 'mixxx'
+#  - 'guitarix'
+  - 'fluidsynth'
+  - 'qsynth'
+#  - 'lilypond'
+  - 'supercollider'
+  - 'chuck'
+  - 'caps'
+  - 'calf'
+  - 'audacious'
+  - 'audacious-plugins'
+  - 'playerctl'
+  - 'meterbridge'
+  - 'patchage'
+  - 'timidity++'
+  - 'timidity-freepats'
+  - 'zynaddsubfx'
+  - 'alsa-tools'
+  - 'alsa-utils'
+  - 'alsa-plugins'
+
 # Ethminer clone dir.
 ethminer_clone_dir: /opt/ethminer
 
