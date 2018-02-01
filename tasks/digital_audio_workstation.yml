@@ -9,7 +9,8 @@
   # qjackctl - Fails to download potrace. No file available.
   # Rakarrack, Gladish - ?
   # denemo - Orphaned pkg.
-  
+  # csound - Fails on vlc.  
+  # pd-l2ork - Fails to compile.
   
   # Include playbook variables.
   - name: Include playbook vars
@@ -39,8 +40,9 @@
 
   # Install packages via yaourt.
   - name: Install packages via yaourt.
-    shell:  'export VISUAL=vim && yaourt --noconfirm -S chordii amsynth phasex csound'
-    when: phasex_binary_exists.isfile is defined
+#    shell:  'export VISUAL=vim && yaourt --noconfirm -S chordii amsynth phasex'
+    shell: 'export VISUAL=vim && yaourt --noconfirm -S ' 
+#    when: phasex_binary_exists.isfile is defined
     become: yes
     become_user: '{{ nvidia_user }}'
 

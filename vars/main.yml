@@ -62,6 +62,7 @@ digital_audio_packages:
   - 'alsa-tools'
   - 'alsa-utils'
   - 'alsa-plugins'
+  - 'vlc'
 
 # Ethminer clone dir.
 ethminer_clone_dir: /opt/ethminer
@@ -289,3 +290,7 @@ gpg_key_id:
 nvidia_user: yoda
 
 nvidia_user_home_dir: /home/yoda
+
+snap_binary: /usr/bin/snap
+
+spotify_binary: /var/lib/snapd/snap/bin/spotify

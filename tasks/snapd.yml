@@ -1,0 +1,38 @@
+---
+
+- hosts: all
+  tasks:
+
+  # Include playbook variables.
+  - name: Include playbook vars
+    include_vars: '../vars/main.yml'
+
+
+
+  # Install snapd via yaourt.
+  - name: Install snapd via yaourt.
+    shell: 'export VISUAL=vim && yaourt --noconfirm -S snapd'
+    when: snap_binary.isfile is defined
+    become: yes
+    become_user: '{{ nvidia_user }}'
+
+  # Has snapd been enabled at boot.
+  - name: Has snapd been enabled on boot.
+    stat:
+      shell: "systemctl list-unit-files |grep snapd.socket |awk '{ print $2 }'"
+    register: snapd_enabled
+
+  # Enable snapd on boot.
+  - name: Enable snapd on boot.
+    shell: systemctl enable --now snapd.socket 
+    args:
+    when: snapd_enabled == 'enabled'
+    become: yes
+    become_user: root
+  
+  # Save location of compiled monerod binary.
+#  - name: Save location of compiled monerod binary.
+#    stat:
+#      path: /usr/local/bin/monerod
+#    register: monerod_bin
+
