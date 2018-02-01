@@ -23,6 +23,7 @@
       dest: "{{ statsd_clone_dir }}"
       version: "{{ statsd_git_branch }}"
       force: yes
+      update: yes
     become: yes
     become_user: root
 
@@ -39,16 +40,27 @@
     become_user: root
 
   # Record if CollectD is running.
-  - command: "ps aux |grep 'collectd -f' |egrep -v grep |awk '{print $11 }'"
+  - shell: "/usr/bin/ps aux |/usr/bin/grep 'collectd -f' |/usr/bin/egrep -v grep |/usr/bin/awk '{print $11 }'"
     register: collectd
     ignore_errors: True 
 
  
-  # Enable and start CollectD service.
-  - name: Enable and start CollectD service.
-    command: systemctl enable collectd.service
+  # Start CollectD service.
+  - name: Start CollectD service.
     command: systemctl start collectd.service
-    when: collectd.stdout != collectd
+    when: collectd == 'collectd'
     become: yes
     become_user: root
  
+  # Has Collectd been enabled at boot.
+  - name: Has CollectD been enabled on boot.
+    shell: "systemctl list-unit-files |grep collectd.service |awk '{ print $2 }'"
+    register: collectd_enabled
+
+  # Enable CollectD on boot.
+  - name: Enable CollectD on boot.
+    shell: systemctl enable --now collectd.service
+    args:
+    when: collectd_enabled == 'enabled'
+    become: yes
+    become_user: root
