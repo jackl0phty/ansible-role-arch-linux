@@ -140,6 +140,7 @@ stats_graphing_stack_packages:
   - 'graphite'
   - 'collectd'
   - 'rrdtool'
+  - 'grafana'
 
 monerogui_packages:
   - ''

@@ -7,8 +7,6 @@
   - name: Include playbook vars
     include_vars: '../vars/main.yml'
 
-
-
   # Install snapd via yaourt.
   - name: Install snapd via yaourt.
     shell: 'export VISUAL=vim && yaourt --noconfirm -S snapd'
@@ -29,10 +27,3 @@
     when: snapd_enabled == 'enabled'
     become: yes
     become_user: root
-  
-  # Save location of compiled monerod binary.
-#  - name: Save location of compiled monerod binary.
-#    stat:
-#      path: /usr/local/bin/monerod
-#    register: monerod_bin
-

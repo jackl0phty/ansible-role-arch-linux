@@ -1,0 +1,63 @@
+---
+# tasks file for jackl0phty.arch_linux
+- hosts: all
+  vars:
+  tasks:
+  # Include playbook variables.
+  - name: Include playbook vars.
+    include_vars: '../vars/main.yml'
+
+  # Register if telegraf binary exists or not.
+  - name: Check if telegraf binary exists.
+    stat: 
+      path: '/usr/bin/telegraf'
+    register: telegraf_binary_exists
+
+  # Install telegraf via yaourt.
+  - name: Install telegraf via yaourt.
+    shell:  'yaourt --noconfirm -S telegraf'
+    when: telegraf_binary_exists.stat.exists == false 
+    become: yes
+    become_user: '{{ nvidia_user }}'
+
+  # Register if chronograf binary exists or not.
+  - name: Check if chronograf binary exists.
+    stat:
+      path: '/usr/bin/chronograf'
+    register: chronograf_binary_exists
+
+  # Install chronograf via yaourt.
+  - name: Install chronograf via yaourt.
+    shell:  'yaourt --noconfirm -S chronograf'
+    when: chronograf_binary_exists.stat.exists == false 
+    become: yes
+    become_user: '{{ nvidia_user }}'
+
+  # Register if kapacitor binary exists or not.
+  - name: Check if kapacitor binary exists.
+    stat:
+      path: '/usr/bin/kapacitor'
+    register: kapacitor_binary_exists
+
+  # Install kapacitor via yaourt.
+  - name: Install kapacitor via yaourt.
+    shell:  'yaourt --noconfirm -S kapacitor'
+    when: kapacitor_binary_exists.stat.exists == false
+    become: yes
+    become_user: '{{ nvidia_user }}'
+ 
+  # Register if InfluxDB binary exists or not.
+  - name: Check if InfluxDB binary exists.
+    stat:
+      path: '/usr/bin/influxd'
+    register: influxdb_binary_exists
+
+  # Install InfluxDB via yaourt.
+  - name: Install InfluxDB via yaourt.
+    shell:  'yaourt --noconfirm -S influxdb'
+    when: influxdb_binary_exists.stat.exists == false
+    become: yes
+    become_user: '{{ nvidia_user }}'
+
+
+
