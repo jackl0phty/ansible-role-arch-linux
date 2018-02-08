@@ -63,12 +63,13 @@
   - name: Has telegraf been enabled on boot.
     shell: "systemctl list-unit-files |grep telegraf.service |awk '{ print $2 }'"
     register: telegraf_enabled
+    ignore_errors: True
 
   # Enable telegraf on boot.
   - name: Enable telegraf on boot.
     shell: systemctl enable --now telegraf.service
     args:
-    #when: telegraf_enabled == 'disabled'
+    when: telegraf_enabled == 'disabled'
     become: yes
     become_user: root
 
@@ -76,12 +77,13 @@
   - name: Has chronograf been enabled on boot.
     shell: "systemctl list-unit-files |grep chronograf.service |awk '{ print $2 }'"
     register: chronograf_enabled
+    ignore_errors: True
 
   # Enable Chronograf on boot.
   - name: Enable chronograf on boot.
     shell: systemctl enable --now chronograf.service
     args:
-    #when: chronograf_enabled == 'disabled'
+    when: chronograf_enabled == 'disabled'
     become: yes
     become_user: root
 
@@ -89,12 +91,13 @@
   - name: Has kapacitor been enabled on boot.
     shell: "systemctl list-unit-files |grep kapacitor.service |awk '{ print $2 }'"
     register: kapacitor_enabled
+    ignore_errors: True
 
   # Enable Kapacitor on boot.
   - name: Enable Kapacitor on boot.
     shell: "systemctl enable --now kapacitor.service"
     args:
-    #when: kapacitor_enabled == 'disabled'
+    when: kapacitor_enabled == 'disabled'
     become: yes
     become_user: root
 
@@ -102,12 +105,13 @@
   - name: Has InfluxDB been enabled on boot.
     shell: "systemctl list-unit-files |grep influxdb.service |awk '{ print $2 }'"
     register: influxdb_enabled
+    ignore_errors: True
   
   # Enable InfluxDB on boot.
   - name: Enable InfluxDB on boot.
     shell: "systemctl enable --now influxdb.service"
     args:
-    #when: influxdb_enabled == 'disabled'
+    when: influxdb_enabled == 'disabled'
     become: yes
     become_user: root
 
