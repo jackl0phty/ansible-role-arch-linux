@@ -59,5 +59,58 @@
     become: yes
     become_user: '{{ nvidia_user }}'
 
+  # Has telegraf been enabled at boot.
+  - name: Has telegraf been enabled on boot.
+    shell: "systemctl list-unit-files |grep telegraf.service |awk '{ print $2 }'"
+    register: telegraf_enabled
+
+  # Enable telegraf on boot.
+  - name: Enable telegraf on boot.
+    shell: systemctl enable --now telegraf.service
+    args:
+    #when: telegraf_enabled == 'disabled'
+    become: yes
+    become_user: root
+
+  # Has Chronograf been enabled at boot.
+  - name: Has chronograf been enabled on boot.
+    shell: "systemctl list-unit-files |grep chronograf.service |awk '{ print $2 }'"
+    register: chronograf_enabled
+
+  # Enable Chronograf on boot.
+  - name: Enable chronograf on boot.
+    shell: systemctl enable --now chronograf.service
+    args:
+    #when: chronograf_enabled == 'disabled'
+    become: yes
+    become_user: root
+
+  # Has Kapacitor been enabled at boot.
+  - name: Has kapacitor been enabled on boot.
+    shell: "systemctl list-unit-files |grep kapacitor.service |awk '{ print $2 }'"
+    register: kapacitor_enabled
+
+  # Enable Kapacitor on boot.
+  - name: Enable Kapacitor on boot.
+    shell: "systemctl enable --now kapacitor.service"
+    args:
+    #when: kapacitor_enabled == 'disabled'
+    become: yes
+    become_user: root
+
+  # Has InfluxDB been enabled at boot.
+  - name: Has InfluxDB been enabled on boot.
+    shell: "systemctl list-unit-files |grep influxdb.service |awk '{ print $2 }'"
+    register: influxdb_enabled
+  
+  # Enable InfluxDB on boot.
+  - name: Enable InfluxDB on boot.
+    shell: "systemctl enable --now influxdb.service"
+    args:
+    #when: influxdb_enabled == 'disabled'
+    become: yes
+    become_user: root
+
+  
 
 
