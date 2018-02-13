@@ -56,11 +56,24 @@
   - name: Has CollectD been enabled on boot.
     shell: "systemctl list-unit-files |grep collectd.service |awk '{ print $2 }'"
     register: collectd_enabled
+    ignore_errors: True
 
   # Enable CollectD on boot.
   - name: Enable CollectD on boot.
     shell: systemctl enable --now collectd.service
     args:
-    when: collectd_enabled == 'enabled'
+    become: yes
+    become_user: root
+
+  # Has Grafana been enabled at boot.
+  - name: Has Grafana been enabled on boot.
+    shell: "systemctl list-unit-files |grep grafana.service |awk '{ print $2 }'"
+    register: grafana_enabled
+    ignore_errors: True
+  
+  # Enable Grafana on boot. 
+  - name: Enable Grafana on boot.
+    shell: "systemctl enable --now grafana.service"
+    args:
     become: yes
     become_user: root

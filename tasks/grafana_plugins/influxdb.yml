@@ -1,0 +1,42 @@
+---
+# tasks file for jackl0phty.arch_linux
+- hosts: all
+  tasks:
+  # Include playbook variables.
+  - name: Include playbook vars.
+    include_vars: '../../vars/main.yml'
+
+  # Install Arch Linux Grafana plugin packages.
+  - name: Install Grafana plugin packages for Arch Linux.
+    pacman:
+      name: "{{ item }}"
+      state: present
+    with_items: '{{ grafana_plugins_packages }}'
+    become: yes
+    become_user: root
+    when: ansible_distribution == "Archlinux"
+
+  # Has InfluxDB Grafana plugin been installed.
+  - name: Has InfluxDB Grafana plugin been installed. 
+    stat: path=/var/lib/grafana/plugins/natel-influx-admin-panel/package.json
+    register: influxdb_install
+    become: yes
+    become_user: root
+
+  # Install InfluxDB Grafana plugin.
+  - name: Install InfluxDB Grafana plugin.
+    shell: grafana-cli plugins install natel-influx-admin-panel; systemctl restart grafana.service
+    args:
+    when: influxdb_install.stat.exists == False
+    become: yes 
+    become_user: root
+
+  # Build InfluxDB Grafana plugin.
+  - name: Build & compile InfluxDB Grafana plugin.
+    shell: yarn install --pure-lockfile; grunt
+    args:
+      chdir: /var/lib/grafana/plugins/natel-influx-admin-panel
+    #when: influxdb_install.stat.exists == False
+    become: yes
+    become_user: root
+

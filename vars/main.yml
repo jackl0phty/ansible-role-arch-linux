@@ -142,6 +142,10 @@ stats_graphing_stack_packages:
   - 'rrdtool'
   - 'grafana'
 
+grafana_plugins_packages:
+  - 'yarn'
+  - 'grunt-cli'
+
 monerogui_packages:
   - ''
 
