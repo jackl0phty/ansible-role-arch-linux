@@ -1,0 +1,32 @@
+---
+# tasks file for jackl0phty.arch_linux
+- hosts: all
+  tasks:
+  # Include playbook variables.
+  - name: Include playbook vars.
+    include_vars: '../../vars/main.yml'
+
+  # Install Arch Linux Grafana plugin packages.
+  - name: Install Grafana plugin packages for Arch Linux.
+    pacman:
+      name: "{{ item }}"
+      state: present
+    with_items: '{{ grafana_plugins_packages }}'
+    become: yes
+    become_user: root
+    when: ansible_distribution == "Archlinux"
+
+  # Has Cloudflare Grafana plugin been installed.
+  - name: Has Cloudflare Grafana plugin been installed. 
+    stat: path=/var/lib/grafana/plugins/cloudflare-app/package.json
+    register: cloudflare_install
+    become: yes
+    become_user: root
+
+  # Install Cloudflare Grafana plugin.
+  - name: Install Cloudflare Grafana plugin.
+    shell: grafana-cli plugins install cloudflare-app; systemctl restart grafana.service
+    args:
+    when: cloudflare_install.stat.exists == False
+    become: yes 
+    become_user: root

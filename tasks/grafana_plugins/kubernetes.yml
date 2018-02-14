@@ -1,0 +1,32 @@
+---
+# tasks file for jackl0phty.arch_linux
+- hosts: all
+  tasks:
+  # Include playbook variables.
+  - name: Include playbook vars.
+    include_vars: '../../vars/main.yml'
+
+  # Install Arch Linux Grafana plugin packages.
+  - name: Install Grafana plugin packages for Arch Linux.
+    pacman:
+      name: "{{ item }}"
+      state: present
+    with_items: '{{ grafana_plugins_packages }}'
+    become: yes
+    become_user: root
+    when: ansible_distribution == "Archlinux"
+
+  # Has kubernetes Grafana plugin been installed.
+  - name: Has kubernetes Grafana plugin been installed. 
+    stat: path=/var/lib/grafana/plugins/raintank-kubernetes-app/package.json
+    register: kubernetes_install
+    become: yes
+    become_user: root
+
+  # Install kubernetes Grafana plugin.
+  - name: Install kubernetes Grafana plugin.
+    shell: grafana-cli plugins install raintank-kubernetes-app; systemctl restart grafana.service
+    args:
+    when: kubernetes_install.stat.exists == False
+    become: yes 
+    become_user: root
