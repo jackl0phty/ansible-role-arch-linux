@@ -1,0 +1,23 @@
+---
+# tasks file for jackl0phty.arch_linux
+- hosts: all
+  tasks:
+  # Include playbook variables.
+  - name: Include playbook vars.
+    include_vars: '../../vars/main.yml'
+
+  # Has diagram panel Grafana plugin been installed.
+  - name: Has diagram panel Grafana plugin been installed. 
+    stat: path=/var/lib/grafana/plugins/jdbranham-diagram-panel/package.json
+    register: diagram_panel_install
+    become: yes
+    become_user: root
+
+  # Install Diagram Paenl Grafana plugin.
+  - name: Install diagram panel Grafana plugin.
+    shell: grafana-cli plugins install jdbranham-diagram-panel; systemctl restart grafana.service
+    args:
+    when: diagram_panel_install.stat.exists == False
+    become: yes 
+    become_user: root
+

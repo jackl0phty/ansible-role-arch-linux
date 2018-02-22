@@ -1,0 +1,23 @@
+---
+# tasks file for jackl0phty.arch_linux
+- hosts: all
+  tasks:
+  # Include playbook variables.
+  - name: Include playbook vars.
+    include_vars: '../../vars/main.yml'
+
+  # Has finance Grafana plugin been installed.
+  - name: Has finance Grafana plugin been installed. 
+    stat: path=/var/lib/grafana/plugins/ayoungprogrammer-finance-datasource/package.json
+    register: finance_install
+    become: yes
+    become_user: root
+
+  # Install finance Grafana plugin.
+  - name: Install finance Grafana plugin.
+    shell: grafana-cli plugins install ayoungprogrammer-finance-datasource; systemctl restart grafana.service
+    args:
+    when: finance_install.stat.exists == False
+    become: yes 
+    become_user: root
+

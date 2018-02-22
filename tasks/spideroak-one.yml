@@ -1,0 +1,22 @@
+---
+# tasks file for jackl0phty.arch_linux
+- hosts: all
+  vars:
+  tasks:
+  # Include playbook variables.
+  - name: Include playbook vars.
+    include_vars: '../vars/main.yml'
+
+  # Register if Spideroak One binary exists or not.
+  - name: Check if Spideroak One binary exists.
+    stat:
+      path: '/opt/SpiderOakONE/lib/SpiderOakONE'
+    register: spideroak_one_exists
+
+  # Install Spideroak One via yaourt.
+  - name: Install Spideroak One via yaourt.
+    shell:  'yaourt --noconfirm -S spideroak-one'
+    when: spideroak_one_exists.stat.exists == false
+    become: yes
+    become_user: '{{ nvidia_user }}'
+

@@ -1,0 +1,23 @@
+---
+# tasks file for jackl0phty.arch_linux
+- hosts: all
+  tasks:
+  # Include playbook variables.
+  - name: Include playbook vars.
+    include_vars: '../../vars/main.yml'
+
+  # Has pie chart panel Grafana plugin been installed.
+  - name: Has pie chart panel Grafana plugin been installed.
+    stat: path=/var/lib/grafana/plugins/grafana-piechart-panel/package.json
+    register: pie_chart_install
+    become: yes
+    become_user: root
+
+  # Install pie chart panel Grafana plugin.
+  - name: Install pie chart panel Grafana plugin.
+    shell: grafana-cli plugins install grafana-piechart-panel; systemctl restart grafana.service
+    args:
+    when: pie_chart_install.stat.exists == False
+    become: yes
+    become_user: root
+

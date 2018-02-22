@@ -1,0 +1,23 @@
+---
+# tasks file for jackl0phty.arch_linux
+- hosts: all
+  tasks:
+  # Include playbook variables.
+  - name: Include playbook vars.
+    include_vars: '../../vars/main.yml'
+
+  # Has status panel Grafana plugin been installed.
+  - name: Has status panel Grafana plugin been installed. 
+    stat: path=/var/lib/grafana/plugins/vonage-status-panel/package.json
+    register: status_panel_install
+    become: yes
+    become_user: root
+
+  # Install status panel Grafana plugin.
+  - name: Install status Grafana plugin.
+    shell: grafana-cli plugins install vonage-status-panel; systemctl restart grafana.service
+    args:
+    when: status_panel_install.stat.exists == False
+    become: yes 
+    become_user: root
+

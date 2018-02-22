@@ -1,0 +1,23 @@
+---
+# tasks file for jackl0phty.arch_linux
+- hosts: all
+  tasks:
+  # Include playbook variables.
+  - name: Include playbook vars.
+    include_vars: '../../vars/main.yml'
+
+  # Has alarm box panel Grafana plugin been installed.
+  - name: Has alarm box panel Grafana plugin been installed.
+    stat: path=/var/lib/grafana/plugins/btplc-alarm-box-panel/package.json
+    register: alarm_box_install
+    become: yes
+    become_user: root
+
+  # Install alarm box panel Grafana plugin.
+  - name: Install alarm box panel Grafana plugin.
+    shell: grafana-cli plugins install btplc-alarm-box-panel; systemctl restart grafana.service
+    args:
+    when: alarm_box_install.stat.exists == False
+    become: yes
+    become_user: root
+

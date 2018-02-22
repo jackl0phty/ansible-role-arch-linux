@@ -1,0 +1,65 @@
+---
+# tasks file for jackl0phty.arch_linux
+- hosts: all
+  tasks:
+  # Include playbook variables.
+  - name: Include playbook vars.
+    include_vars: '../../vars/main.yml'
+
+  # Install Arch Linux Grafana plugin packages.
+  - name: Install Grafana plugin packages for Arch Linux.
+    pacman:
+      name: "{{ item }}"
+      state: present
+    with_items: '{{ ntopng_plugins_packages }}'
+    become: yes
+    become_user: root
+    when: ansible_distribution == "Archlinux"
+
+  # Has ntopng Grafana plugin been installed.
+  - name: Has ntopng Grafana plugin been installed. 
+    stat: path=/var/lib/grafana/plugins/ntop-ntopng-datasource/package.json
+    register: ntopng_install
+    become: yes
+    become_user: root
+
+  # Install ntopng Grafana plugin.
+  - name: Install ntopng Grafana plugin.
+    shell: grafana-cli plugins install ntop-ntopng-datasource; systemctl restart grafana.service
+    args:
+    when: ntopng_install.stat.exists == False
+    become: yes 
+    become_user: root
+
+  # Clone PF_RING Github repo.
+  - name: Clone PF_RING from Github.
+    git:
+      repo: "{{ pfring_git_repo }}"
+      dest: "{{ pfring_clone_dir }}"
+      version: "{{ pfring_git_branch }}"
+    become: yes
+    become_user: root
+
+  # Set perms to to un-priv user.
+  - name: Set perms on cloned repo to un-priv user.
+    file:
+      path: "{{ pfring_clone_dir }}"
+      owner: "{{ pfring_user }}"
+      group: "{{ pfring_user }}"
+      recurse: yes
+    become: yes
+    become_user: root
+
+  # Register if pfring binary exists or not.
+#  - name: Check if pfring binary exists.
+#    stat:
+#      path: "{{ pfring_clone_dir }}/build/ethminer/ethminer"
+#    register: pfring_module_exists
+
+  # Build PF_RING kernel module.
+  - name: Build PF_RING kernel module.
+    shell: make
+    args:
+      chdir: "{{ pfring_clone_dir }}/kernel"
+#    when: pfring_module_exists.isfile is defined
+

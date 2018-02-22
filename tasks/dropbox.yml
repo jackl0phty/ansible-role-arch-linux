@@ -1,0 +1,22 @@
+---
+# tasks file for jackl0phty.arch_linux
+- hosts: all
+  vars:
+  tasks:
+  # Include playbook variables.
+  - name: Include playbook vars.
+    include_vars: '../vars/main.yml'
+
+  # Register if Dropbox binary exists or not.
+  - name: Check if Dropbox One binary exists.
+    stat:
+      path: '/usr/bin/dropbox'
+    register: dropbox_binary_exists
+
+  # Install Dropbox via yaourt.
+  - name: Install Dropbox via yaourt.
+    shell:  'yaourt --noconfirm -S dropbox'
+    when: dropbox_binary_exists.stat.exists == false
+    become: yes
+    become_user: '{{ nvidia_user }}'
+

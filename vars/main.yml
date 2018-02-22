@@ -64,6 +64,11 @@ digital_audio_packages:
   - 'alsa-plugins'
   - 'vlc'
 
+# Kubernetes cluster packages.
+kubernetes_packages:
+  - 'docker'
+  - 'bridge-utils'
+
 # Ethminer clone dir.
 ethminer_clone_dir: /opt/ethminer
 
@@ -75,6 +80,23 @@ ethminer_git_branch: master
 
 # Ethminer mining user.
 ethminer_mining_user: yoda
+
+
+ntopng_plugins_packages:
+  - "linux-headers"
+
+
+# PF_RING clone dir.
+pfring_clone_dir: /opt/pfring
+
+# pfring git repo to clone.
+pfring_git_repo: https://github.com/ntop/PF_RING.git
+
+# pfring brach to clone.
+pfring_git_branch: 7.0.0-stable 
+
+# pfring user.
+pfring_user: yoda
 
 # Install QT 5. Required to mine Vericoin.
 qt_version: 5

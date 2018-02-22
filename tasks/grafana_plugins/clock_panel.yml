@@ -1,0 +1,23 @@
+---
+# tasks file for jackl0phty.arch_linux
+- hosts: all
+  tasks:
+  # Include playbook variables.
+  - name: Include playbook vars.
+    include_vars: '../../vars/main.yml'
+
+  # Has clock panel Grafana plugin been installed.
+  - name: Has clock panel Grafana plugin been installed.
+    stat: path=/var/lib/grafana/plugins/grafana-clock-panel/package.json
+    register: clock_install
+    become: yes
+    become_user: root
+
+  # Install clock panel Grafana plugin.
+  - name: Install clock panel Grafana plugin.
+    shell: grafana-cli plugins install grafana-clock-panel; systemctl restart grafana.service
+    args:
+    when: clock_install.stat.exists == False
+    become: yes
+    become_user: root
+

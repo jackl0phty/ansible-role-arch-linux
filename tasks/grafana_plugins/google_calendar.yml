@@ -1,0 +1,23 @@
+---
+# tasks file for jackl0phty.arch_linux
+- hosts: all
+  tasks:
+  # Include playbook variables.
+  - name: Include playbook vars.
+    include_vars: '../../vars/main.yml'
+
+  # Has Gogole Calendar Grafana plugin been installed.
+  - name: Has Google Calendar Grafana plugin been installed. 
+    stat: path=/var/lib/grafana/plugins/mtanda-google-calendar-datasource/package.json
+    register: google_calendar_install
+    become: yes
+    become_user: root
+
+  # Install Google Calendar Grafana plugin.
+  - name: Install Google Calendar Grafana plugin.
+    shell: grafana-cli plugins install mtanda-google-calendar-datasource; systemctl restart grafana.service
+    args:
+    when: google_calendar_install.stat.exists == False
+    become: yes 
+    become_user: root
+
