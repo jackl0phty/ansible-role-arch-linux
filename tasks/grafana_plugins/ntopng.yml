@@ -16,6 +16,19 @@
     become_user: root
     when: ansible_distribution == "Archlinux"
 
+  # Register if ntopng binary exists or not.
+  - name: Check if ntopng binary exists.
+    stat:
+      path: '/usr/bin/ntopng'
+    register: ntopng_binary_exists
+
+  # Install ntopng via yaourt.
+  - name: Install ntopng via yaourt.
+    shell:  'yaourt --noconfirm -S ntopng'
+    when: ntopng_binary_exists.stat.exists == false
+    become: yes
+    become_user: '{{ nvidia_user }}'
+
   # Has ntopng Grafana plugin been installed.
   - name: Has ntopng Grafana plugin been installed. 
     stat: path=/var/lib/grafana/plugins/ntop-ntopng-datasource/package.json
@@ -31,35 +44,27 @@
     become: yes 
     become_user: root
 
-  # Clone PF_RING Github repo.
-  - name: Clone PF_RING from Github.
-    git:
-      repo: "{{ pfring_git_repo }}"
-      dest: "{{ pfring_clone_dir }}"
-      version: "{{ pfring_git_branch }}"
+  # Record if ntopng is running.
+#  - shell: "/usr/bin/ps aux |/usr/bin/grep 'ntopng' |/usr/bin/egrep -v grep |/usr/bin/awk '{print $11 }'"
+#    register: ntopng 
+#    ignore_errors: True
+
+  # Start ntopng service.
+  - name: Start ntopng service.
+    command: systemctl start ntopng.service
+#    when: ntopng == 'ntopng'
     become: yes
     become_user: root
 
-  # Set perms to to un-priv user.
-  - name: Set perms on cloned repo to un-priv user.
-    file:
-      path: "{{ pfring_clone_dir }}"
-      owner: "{{ pfring_user }}"
-      group: "{{ pfring_user }}"
-      recurse: yes
-    become: yes
-    become_user: root
+  # Has ntopng been enabled at boot.
+  - name: Has ntopng been enabled on boot.
+    shell: "systemctl list-unit-files |grep ntopng.service |awk '{ print $2 }'"
+    register: ntopng_enabled
+    ignore_errors: True
 
-  # Register if pfring binary exists or not.
-#  - name: Check if pfring binary exists.
-#    stat:
-#      path: "{{ pfring_clone_dir }}/build/ethminer/ethminer"
-#    register: pfring_module_exists
-
-  # Build PF_RING kernel module.
-  - name: Build PF_RING kernel module.
-    shell: make
+  # Enable ntopng on boot.
+  - name: Enable ntopng on boot.
+    shell: systemctl enable --now ntopng.service
     args:
-      chdir: "{{ pfring_clone_dir }}/kernel"
-#    when: pfring_module_exists.isfile is defined
-
+    become: yes
+    become_user: root

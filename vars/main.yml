@@ -84,7 +84,7 @@ ethminer_mining_user: yoda
 
 ntopng_plugins_packages:
   - "linux-headers"
-
+  - "redis"
 
 # PF_RING clone dir.
 pfring_clone_dir: /opt/pfring
