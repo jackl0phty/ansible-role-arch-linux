@@ -16,6 +16,49 @@
     become_user: root
     when: ansible_distribution == "Archlinux"
 
+    # Record if redis is running.
+  - shell: "/usr/bin/ps aux |/usr/bin/grep 'redis-server' |/usr/bin/egrep -v grep |/usr/bin/awk '{print $11 }'"
+    register: redis 
+    ignore_errors: True
+
+  # Start redis service.
+  - name: Start redis service.
+    command: systemctl start redis.service
+    when: redis == 'redis-server'
+    become: yes
+    become_user: root
+
+  # Has redis been enabled at boot.
+  - name: Has redis been enabled on boot.
+    shell: "systemctl list-unit-files |grep redis.service |awk '{ print $2 }'"
+    register: redis_enabled
+    ignore_errors: True
+
+  # Enable redis on boot.
+  - name: Enable redis on boot.
+    shell: systemctl enable --now redis.service
+    args:
+    become: yes
+    become_user: root
+
+  # Create config directory for ntopng.
+  - name: Create config directory for ntopng.
+    file:
+      path: "{{ ntopng_config_dir }}"
+      owner: root 
+      group: root 
+      state: directory
+      mode: 0755
+
+  # Create data directory for ntopng.
+  - name: Create data directory for ntopng.
+    file:
+      path: "{{ ntopng_data_dir }}"
+      owner: nobody
+      group: root
+      state: directory
+      mode: 0755
+
   # Register if ntopng binary exists or not.
   - name: Check if ntopng binary exists.
     stat:
@@ -28,6 +71,16 @@
     when: ntopng_binary_exists.stat.exists == false
     become: yes
     become_user: '{{ nvidia_user }}'
+
+  # ntopng config file.
+  - name: Write out config file for ntopng.
+    template:
+      src: '../templates/ntopng.conf.j2'
+      dest: "{{ ntopng_config_file }}"
+      owner: root
+      group: root
+      mode: 0644
+    when: monerod_config_file.isfile is defined
 
   # Has ntopng Grafana plugin been installed.
   - name: Has ntopng Grafana plugin been installed. 
@@ -45,14 +98,14 @@
     become_user: root
 
   # Record if ntopng is running.
-#  - shell: "/usr/bin/ps aux |/usr/bin/grep 'ntopng' |/usr/bin/egrep -v grep |/usr/bin/awk '{print $11 }'"
-#    register: ntopng 
-#    ignore_errors: True
+  - shell: "/usr/bin/netstat -nlp |/usr/bin/grep ntopng |/usr/bin/grep 3001 |/usr/bin/awk '{ print $7 }' |/usr/bin/sed 's/[0-9]*\\///g'"
+    register: ntopng 
+    ignore_errors: True
 
   # Start ntopng service.
   - name: Start ntopng service.
     command: systemctl start ntopng.service
-#    when: ntopng == 'ntopng'
+    when: ntopng == 'ntopng'
     become: yes
     become_user: root
 
@@ -65,6 +118,7 @@
   # Enable ntopng on boot.
   - name: Enable ntopng on boot.
     shell: systemctl enable --now ntopng.service
+    when: ntopng_enabled == 'disabled'
     args:
     become: yes
     become_user: root

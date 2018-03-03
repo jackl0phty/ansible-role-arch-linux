@@ -86,6 +86,11 @@ ntopng_plugins_packages:
   - "linux-headers"
   - "redis"
 
+# Required directories for ntopng.
+ntopng_config_dir: /etc/ntopng
+ntopng_data_dir: /mnt/disk1/ntopng
+ntopng_config_file: "{{ ntopng_config_dir }}/ntopng.conf"
+
 # PF_RING clone dir.
 pfring_clone_dir: /opt/pfring
 
