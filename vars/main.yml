@@ -69,6 +69,30 @@ kubernetes_packages:
   - 'docker'
   - 'bridge-utils'
 
+# Kubernetes clone dir.
+kubernetes_clone_dir: /opt/kubernetes
+
+# Kubernetes git repo to clone.
+kubernetes_git_repo: https://github.com/kubernetes/kubernetes.git
+
+# Kubernetes git branch to clone.
+kubernetes_git_branch: master
+
+# Kubernetes user.
+kubernetes_user: yoda
+
+# AWS CLI packages.
+aws_cli_packages:
+  - 'aws-cli'
+
+# AWS CLI user.
+aws_cli_user: yoda
+
+# Set AWS profile in credentials file.
+aws_cli_profile: default
+aws_cli_output: json
+aws_cli_region: us-east-1
+
 # Ethminer clone dir.
 ethminer_clone_dir: /opt/ethminer
 

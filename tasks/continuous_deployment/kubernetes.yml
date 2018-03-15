@@ -42,3 +42,75 @@
     become: yes
     become_user: root
 
+  # Clone Kubernetes Github repo.
+  - name: Clone Kubernetes Github repo.
+    git:
+      repo: "{{ kubernetes_git_repo }}"
+      dest: "{{ kubernetes_clone_dir }}"
+      version: "{{ kubernetes_git_branch }}"
+      force: yes
+      update: yes
+    become: yes
+    become_user: root
+
+  # Set perms to to un-priv user.
+  - name: Set perms on kubernetes repo to un-priv user.
+    file:
+      path: "{{ kubernetes_clone_dir }}"
+      owner: "{{ kubernetes_user }}"
+      group: "{{ kubernetes_user }}"
+      state: directory
+      mode: 0755
+      recurse: yes
+    become: yes
+    become_user: root
+
+  # Register if kubernetes tarball has been built.
+  - name: Check if kubernetes tarbarll exists.
+    stat:
+      path: "{{ kubernetes_clone_dir }}/_output/release-tars/kubernetes.tar.gz" 
+    register: kubernetes_tarball_exists
+
+  # Build Kubernetes from source.
+  - name: Build Kubernetes from source.
+    shell:  'make release'
+    args:
+      chdir: "{{ kubernetes_clone_dir }}"
+    when: kubernetes_tarball_exists.stat.exists == false
+    become: yes
+    become_user: '{{ kubernetes_user }}'
+
+  # Symlink Kubernetes client bin.
+  - name: Symlink Kubernetes client bin.
+    file:
+      src: "{{ kubernetes_clone_dir }}/_output/release-stage/client/linux-amd64/kubernetes/client/bin/{{ item.src }}"
+      dest: "/usr/local/bin/{{ item.dest }}"
+      owner: "{{ kubernetes_user }}"
+      group: "{{ kubernetes_user }}"
+      state: link
+      mode: 0744
+    with_items:
+      - { src: 'kubectl', dest: 'kubectl' } 
+    become: yes
+    become_user: root
+  
+  # Symlink Kubernetes server bins.
+  - name: Symlink Kubernetes server bins.
+    file:
+      src: "{{ kubernetes_clone_dir }}/_output/release-stage/server/linux-amd64/kubernetes/server/bin/{{ item }}"
+      dest: "/usr/local/bin/{{ item }}"
+      owner: "{{ kubernetes_user }}"
+      group: "{{ kubernetes_user }}"
+      state: link
+      mode: 0744
+    with_items:
+      - apiextensions-apiserver
+      - cloud-controller-manager
+      - hyperkube
+      - kube-apiserver
+      - kube-proxy
+      - kube-scheduler
+      - kubelet
+      - mounter
+    become: yes
+    become_user: root

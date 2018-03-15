@@ -1,0 +1,42 @@
+---
+  
+- hosts: all
+  tasks:
+
+  # Include playbook variables.
+  - name: Include playbook vars
+    include_vars: '../../vars/main.yml'
+
+  # Install packages for aws-cli.
+  - name: Install aws-cli packages.
+    pacman:
+      name: "{{ item }}"
+      state: present
+    with_items: '{{ aws_cli_packages }}'
+    become: yes
+    become_user: root
+    when: ansible_distribution == "Archlinux"
+
+  # Create .aws dir and set perms.
+  - name: Create .aws dir and set perms.
+    file:
+      path: "/home/{{ aws_cli_user }}/.aws"
+      owner: "{{ aws_cli_user }}"
+      group: "{{ aws_cli_user }}"
+      state: directory
+      mode: 0755
+      recurse: yes
+    become: yes
+    become_user: root
+
+  # Write AWS credentials file.
+  - name: Write AWS credentials file.
+    template:
+      src: '../../templates/awscli.j2'
+      dest: "/home/{{ aws_cli_user }}/.aws/credentials"
+      owner: "{{ aws_cli_user }}"
+      group: "{{ aws_cli_user }}" 
+      mode: 0600
+    become: yes
+    become_user: root
+
