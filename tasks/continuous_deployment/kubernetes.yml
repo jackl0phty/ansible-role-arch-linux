@@ -42,6 +42,12 @@
     become: yes
     become_user: root
 
+  # Has Kubernetes source been cloned.
+  - name: Has Kubernetes source been cloned.
+    stat:
+      path: "{{ kubernetes_clone_dir }}"
+    register: kubes_cloned
+
   # Clone Kubernetes Github repo.
   - name: Clone Kubernetes Github repo.
     git:
@@ -50,6 +56,7 @@
       version: "{{ kubernetes_git_branch }}"
       force: yes
       update: yes
+    when: kubes_cloned.stat.isdir == False
     become: yes
     become_user: root
 
@@ -114,3 +121,54 @@
       - mounter
     become: yes
     become_user: root
+
+  # Has etcd source been moved.
+  - name: Has etcd source been moved.
+    stat:
+      path: "/opt/etcd-v{{ etcd_version }}" 
+    register: etcd_source_moved
+ 
+  # Download etcd source.
+  - name: Download etcd source. 
+    unarchive:
+      src: "https://github.com/coreos/etcd/releases/download/v{{ etcd_version }}/etcd-v{{ etcd_version }}-linux-amd64.tar.gz"
+      dest: /tmp
+      remote_src: yes
+      owner: "{{ kubernetes_user }}"
+      group: "{{ kubernetes_user }}"
+    when: etcd_source_moved.stat.isdir == False
+ 
+  # Move & rename etcd source dir.
+  - name: Move & rename etcd source dir.
+    shell: "mv /tmp/etcd-v{{ etcd_version }}-linux-amd64 /opt/etcd-v{{ etcd_version }}"
+    ignore_errors: True
+    when: etcd_source_moved.stat.isdir == False
+    become: yes
+    become_user: root
+ 
+  # Symlink etcd bins.
+  - name: Symlink etcd bins.
+    file:
+      src: "/opt/etcd-v{{ etcd_version }}/{{ item }}"
+      dest: "/usr/local/bin/{{ item }}"
+      owner: "{{ kubernetes_user }}"
+      group: "{{ kubernetes_user }}"
+      state: link
+      mode: 0744
+    with_items:
+      - etcd
+      - etcdctl 
+    become: yes
+    become_user: root
+
+
+  # Write out kube config.
+#  - name: Write out kube config.
+#    template:
+#      src: '../templates/monerod.conf'
+#      dest: "{{ monerod_config_file }}"
+#      owner: "{{ kubernetes_user }}"
+#      group: "{{ kubernetes_user }}"
+#      mode: 0644
+#    when: monerod_config_file.isfile is defined
+
